@@ -631,33 +631,51 @@ WHERE
     - TO_DATE(NUMBER/CHARACTER, 포맷) : 숫자형, 문자형 데이터를 날짜로 변환.
 */
 
-SELECT TO_DATE(20221104) -- 2022/11/04
-FROM DUAL; -- 기본포맷 YY/MM/DD/로 변환.
+SELECT
+    TO_DATE(20221104) -- 2022/11/04
+FROM
+    DUAL; -- 기본포맷 YY/MM/DD/로 변환.
 
-SELECT TO_DATE(000101) -- 정수갑숮ㅇ에 0으로 시작하는 숫자는 없기때문에 에러발생
-FROM DUAL;
+SELECT
+    TO_DATE(000101) -- 정수갑숮ㅇ에 0으로 시작하는 숫자는 없기때문에 에러발생
+FROM
+    DUAL;
 
-SELECT TO_DATE('000101') -- 00/01/01
-FROM DUAL; -- 0 으로 시작하는 년도를 다룰때는 반드시 홀따옴표를 붙여서 문자열처럼 다뤄줘야함.
+SELECT
+    TO_DATE('000101') -- 00/01/01
+FROM
+    DUAL; -- 0 으로 시작하는 년도를 다룰때는 반드시 홀따옴표를 붙여서 문자열처럼 다뤄줘야함.
 
-SELECT TO_DATE('20221104', 'YYYYMMDD') -- 22/11/04
-FROM DUAL;
+SELECT
+    TO_DATE('20221104', 'YYYYMMDD') -- 22/11/04
+FROM
+    DUAL;
 
-SELECT TO_DATE('091129 143050','YYMMDD HH24:MI:SS') -- 09/11/29
-FROM DUAL;
+SELECT
+    TO_DATE('091129 143050', 'YYMMDD HH24:MI:SS') -- 09/11/29
+FROM
+    DUAL;
 
-SELECT TO_DATE('220806', 'YYMMDD') -- 22/08/06
-FROM DUAL; -- 2022년도
- 
-SELECT TO_DATE('980806', 'YYMMDD') -- 98/08/06
-FROM DUAL; -- 2098년도 
+SELECT
+    TO_DATE('220806', 'YYMMDD') -- 22/08/06
+FROM
+    DUAL; -- 2022년도
+
+SELECT
+    TO_DATE('980806', 'YYMMDD') -- 98/08/06
+FROM
+    DUAL; -- 2098년도 
 -- TO_DATE() 함수를 이용해서 DATE형식으로 변환시 두자리 년도에 대해 YY형식을 적용시키면 무조건 현재세기(20)를 붙여줌
 
-SELECT TO_DATE('220218', 'RRMMDD') -- 22/02/18
-FROM DUAL; -- 2022년도 
+SELECT
+    TO_DATE('220218', 'RRMMDD') -- 22/02/18
+FROM
+    DUAL; -- 2022년도 
 
-SELECT TO_DATE('980806', 'RRMMDD') -- 98/08/06
-FROM DUAL; -- 1998년도 
+SELECT
+    TO_DATE('980806', 'RRMMDD') -- 98/08/06
+FROM
+    DUAL; -- 1998년도 
 -- 두자리년도에 대해 RR포맷을 적용시켰을 경우 => 50이상이면 이전세기, 50미만이면 현재 세기(반올림)
 
 /*
@@ -665,14 +683,20 @@ FROM DUAL; -- 1998년도
     TO_NUMBER(CHARACTER, 포맷) : 문자형데이타를 숫자형으로 변환.
 */
 -- 자동형변환의 예시(문자열 -> 숫자)
-SELECT '123' + '123' 
-FROM DUAL; -- 123123 X 246 O : 자동형변환 후 산술연산이 진행됨
+SELECT
+    '123' + '123'
+FROM
+    DUAL; -- 123123 X 246 O : 자동형변환 후 산술연산이 진행됨
 
-SELECT TO_NUMBER('10,000,000','99,999,999') + TO_NUMBER('550,000','999,999') -- 10550000
-FROM DUAL; -- ,문자를 포함하고 있어서 자동형변환이 안된다.
+SELECT
+    TO_NUMBER('10,000,000', '99,999,999') + TO_NUMBER('550,000', '999,999') -- 10550000
+FROM
+    DUAL; -- ,문자를 포함하고 있어서 자동형변환이 안된다.
 
-SELECT TO_NUMBER('0123') -- 123
-FROM DUAL;
+SELECT
+    TO_NUMBER('0123') -- 123
+FROM
+    DUAL;
 
 -- 문자열, 숫자, 날짜 형변환 끝 --
 --------------------------------------------------------------------------------------------------
@@ -687,13 +711,32 @@ FROM DUAL;
 */
 
 -- 사원명, 보너스, 보너스가 없는경우 0 을출력
-SELECT EMP_NAME, BONUS, NVL(BONUS,0)
-FROM EMPLOYEE;
+SELECT
+    EMP_NAME,
+    BONUS,
+    NVL(BONUS, 0)
+FROM
+    EMPLOYEE;
 
 -- 보너스 포함 연봉 조회
-SELECT EMP_NAME, (SALARY+ (SALARY*NVL(BONUS,0))) * 12 AS "보너스가 포함된 연봉"
-FROM EMPLOYEE;
+SELECT
+    EMP_NAME,
+    ( SALARY + ( SALARY * NVL(BONUS, 0) ) ) * 12 AS "보너스가 포함된 연봉"
+FROM
+    EMPLOYEE;
 
 -- 사원명, 부서코드 (부서코드가 없는경우 '없음') 조회
-SELECT EMP_NAME, NVL(DEPT_CODE,'없음')
-FROM EMPLOYEE;
+SELECT
+    EMP_NAME,
+    NVL(DEPT_CODE, '없음')
+FROM
+    EMPLOYEE;0) ) ) * 12 AS "보너스가 포함된 연봉"
+FROM
+    EMPLOYEE;
+
+-- 사원명, 부서코드 (부서코드가 없는경우 '없음') 조회
+SELECT
+    EMP_NAME,
+    NVL(DEPT_CODE, '없음')
+FROM
+    EMPLOYEE;
