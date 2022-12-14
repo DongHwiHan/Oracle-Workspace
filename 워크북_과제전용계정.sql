@@ -91,3 +91,4 @@ WHERE
         ABSENCE_YN = 'N'
     AND ENTRANCE_DATE LIKE '02%'
     AND STUDENT_ADDRESS LIKE '%전주%';
+---------------------------------------------------------------------
