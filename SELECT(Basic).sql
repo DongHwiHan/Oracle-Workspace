@@ -159,8 +159,8 @@ FROM
     TB_STUDENT
 WHERE
     TO_CHAR(ENTRANCE_DATE, 'YYYY') - TO_CHAR(TO_DATE(SUBSTR(STUDENT_SSN, 1, 6),
-        'RRMMDD'),
-                                             'RRRR') > 19;
+        'RRMMDD'), 'RRRR') > 19;
+                                            
 
 --6.
 -- 2020년 크리스마스는 무슨 요일인가?

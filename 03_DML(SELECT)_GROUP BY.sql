@@ -9,6 +9,8 @@
     GROUP BY 묶어줄 기준이될 칼럼
 */
 -- 각 부서별로 총 급여의 합계
+
+
 SELECT
     DEPT_CODE,
     SUM(SALARY)
@@ -166,3 +168,46 @@ HAVING
     4. HAVING 그룹함수식에 대한 조건식
     6. ORDER BY [정렬기준에 해당하는 칼럼명 / 별칭 / 컬럼의순번] [ASC / DESC] (생략가능) [NULLS FIRST / NULLS LAST] (생략가능)
 */
+---------------------------------------------------------------------------------
+/*
+    < 집합 연산자 SET OPERATOR >
+    
+    여러 개의 쿼리문을 가지고 하나의 쿼리문으로 만드는 연산자
+    
+    - NUION (합집합) : 두 쿼리문을 수행한 결과값을 더한 후 중복되는 부분은 한번만 빼서 중복을 제거한 것 => OR
+    - UNION ALL : 두 쿼리문을 수행한 결과값을 더한 후 중복 제거를 하지 않은 것 => 합집합 + 교집합
+    - INTERSECT (교집합) : 두 쿼리문을 수행한 결과값의 중복된 부분 => AND
+    - MINUS(차집합) : 선행 쿼리문 결과값에서 후행 쿼리문 결과값을 뺀 나머지 부분 => 성행 쿼리문 결과값 - 교집합
+    
+    주의해야할 점 : 두 쿼리문의 결과를 합쳐서 한개의 테이블로 보여줘야 하기 때문에 두 쿼리문의 SELECT절 부분은 같아야 한다.
+                    즉 조회할 "컬럼"이 동일해야한다.
+*/
+-- 1. UNION (합집합) : 두 쿼리문을 수행한 결과값을 더하지만 중복은 제거.
+
+-- 부서코드가 D5이거나 또는 급여가 300만원 초과인 사원들조회 (사번, 사원명, 부서코드, 급여)
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5' -- 6명
+
+UNION -- 중복코드 지워지고 더해져서 12명
+
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+WHERE SALARY > 3000000; -- 8명
+
+-- 직급코드가 J6이거나 또는 부서코드가 D1인 사원들을 조회 (사번, 사원명, 부서코드, 직급코드) => UNION 사용해서 데이터조회.
+
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, JOB_CODE
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D1' 
+
+UNION 
+
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, JOB_CODE
+FROM EMPLOYEE
+WHERE JOB_CODE = 'J6'; 
+
+
+SELECT SUM((SALARY*NVL(BONUS,0))*12)
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5';
