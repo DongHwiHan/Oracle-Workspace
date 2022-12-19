@@ -10,7 +10,6 @@
 */
 -- 각 부서별로 총 급여의 합계
 
-
 SELECT
     DEPT_CODE,
     SUM(SALARY)
@@ -185,29 +184,116 @@ HAVING
 -- 1. UNION (합집합) : 두 쿼리문을 수행한 결과값을 더하지만 중복은 제거.
 
 -- 부서코드가 D5이거나 또는 급여가 300만원 초과인 사원들조회 (사번, 사원명, 부서코드, 급여)
-SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
-FROM EMPLOYEE
-WHERE DEPT_CODE = 'D5' -- 6명
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    SALARY
+FROM
+    EMPLOYEE
+WHERE
+    DEPT_CODE = 'D5' -- 6명
 
 UNION -- 중복코드 지워지고 더해져서 12명
 
-SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
-FROM EMPLOYEE
-WHERE SALARY > 3000000; -- 8명
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    SALARY
+FROM
+    EMPLOYEE
+WHERE
+    SALARY > 3000000; -- 8명
 
 -- 직급코드가 J6이거나 또는 부서코드가 D1인 사원들을 조회 (사번, 사원명, 부서코드, 직급코드) => UNION 사용해서 데이터조회.
 
-SELECT EMP_ID, EMP_NAME, DEPT_CODE, JOB_CODE
-FROM EMPLOYEE
-WHERE DEPT_CODE = 'D1' 
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    JOB_CODE
+FROM
+    EMPLOYEE
+WHERE
+    DEPT_CODE = 'D1'
+UNION
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    JOB_CODE
+FROM
+    EMPLOYEE
+WHERE
+    JOB_CODE = 'J6'; 
 
-UNION 
+-- 2. UNION ALL : 여러개의 쿼리결과를 더해서 보여주는 연산자. (중복제거 안함.)
+-- 직급코드가 J6이거나 부서코드가 D1인 사원들을 조회(사번, 사원명, 부서코드, 직급코드)
 
-SELECT EMP_ID, EMP_NAME, DEPT_CODE, JOB_CODE
-FROM EMPLOYEE
-WHERE JOB_CODE = 'J6'; 
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    JOB_CODE
+FROM
+    EMPLOYEE
+WHERE
+    DEPT_CODE = 'D1'
+UNION ALL
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    JOB_CODE
+FROM
+    EMPLOYEE
+WHERE
+    JOB_CODE = 'J6'; 
 
+-- 3. INTERSECT : 교집합, 여러 쿼리 결과의 중복된 결과만 조회 => AND
+-- 직급코드가 J6이거나 부서코드가 D1인 사원들을 조회(사번, 사원명, 부서코드, 직급코드)
 
-SELECT SUM((SALARY*NVL(BONUS,0))*12)
-FROM EMPLOYEE
-WHERE DEPT_CODE = 'D5';
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    JOB_CODE
+FROM
+    EMPLOYEE
+WHERE
+    DEPT_CODE = 'D1' -- 명수, 태연, 지연
+
+INTERSECT
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    JOB_CODE
+FROM
+    EMPLOYEE
+WHERE
+    JOB_CODE = 'J6'; -- 형동, 쯔위, 동운, 태연, 지연, 태림
+
+-- 4. MINUS : 차집합, 선행쿼리결과에서 후행쿼리결과를 뺀 나머지.
+-- 직급코드가 J6이거나 부서코드가 D1인 사원들을 조회(사번, 사원명, 부서코드, 직급코드)
+
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    JOB_CODE
+FROM
+    EMPLOYEE
+WHERE
+    JOB_CODE = 'J6' -- 형동, 쯔위, 동운, 태연, 지연, 태림
+MINUS
+SELECT
+    EMP_ID,
+    EMP_NAME,
+    DEPT_CODE,
+    JOB_CODE
+FROM
+    EMPLOYEE
+WHERE
+    DEPT_CODE = 'D1'; -- 명수, 태연, 지연
