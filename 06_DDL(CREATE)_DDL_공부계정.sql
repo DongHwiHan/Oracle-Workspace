@@ -275,3 +275,276 @@ CREATE TABLE MEM_PRIMARYKEY1 (
     PHONER   VARCHAR2(15),
     EMAIL    VARCHAR2(30)
 );
+
+/*
+    4. CHECK 제약조건
+    컬럼에 기록될수 있는 값에대한 조건을 설정할수 있음.
+    EX) 성별 'F', 'M' 값만 들어오게 하고싶다.
+    
+    [표현법]
+    CHECK(조건식)
+*/
+
+CREATE TABLE MEM_CHECK(
+    MEM_NO NUMBER PRIMARY KEY,
+    MEM_ID VARCHAR2(20) NOT NULL UNIQUE,
+    MEM_PWD VARCHAR2(20) NOT NULL,
+    NEN_NAME VARCHAR2(20) NOT NULL,
+    GENDER CHAR(1) CHECK (GENDER IN ('F', 'M') ) NOT NULL,
+    PHONE VARCHAR2(15),
+    EMAIL VARCHAR2(30),
+    MEM_DATE DATE NOT NULL
+);
+-- 회원가입.
+INSERT INTO MEM_CHECK
+VALUES(1,'user01','pass01','민경민','Z','010-1111-1111',null,SYSDATE);
+-- CHECK 제약조건 위배.
+INSERT INTO MEM_CHECK
+VALUES(4,'user04','pass01','민경민4',NULL,'010-1111-1111',null,SYSDATE);
+-- CHECK제약조건에 NULL값도 추가 가능함.
+-- NULL값 을 추가적으로 못들어오게하고싶다면 ?? NOT NULL 제약조건을 걸어줘야한다.
+
+/*
+    DEFAULT 설정
+    특정 컬럼에 들어올 값에 대한 기본 설정(제약조건 아님)
+    
+    EX) 회원가입일 컬럼에 회원정보가 삽입되는순간의 시간을 기록하고싶다
+        => DEFAULT 값으로 SYSDATE를 설정해주면됨.
+*/
+DROP TABLE MEM_CHECK;
+
+CREATE TABLE MEM_CHECK(
+    MEM_NO NUMBER PRIMARY KEY,
+    MEM_ID VARCHAR2(20) NOT NULL UNIQUE,
+    MEM_PWD VARCHAR2(20) NOT NULL,
+    MEM_NAME VARCHAR2(20) NOT NULL,
+    GENDER CHAR(1) CHECK (GENDER IN ('F', 'M') ) NOT NULL,
+    PHONE VARCHAR2(15),
+    EMAIL VARCHAR2(30),
+    MEM_DATE DATE DEFAULT SYSDATE NOT NULL  -- DEFAULT 설정을 먼저 하고나서 제약조건을 추가해줘야함.
+);
+INSERT INTO MEM_CHECK
+VALUES(1,'user01','pass01','민경민','M',NULL,NULL);
+
+/*
+    INSERT INTO MEM_CHECK
+    VALUES (값들 나열); -- 모든 칼럼의 값을 직접 제시해줘야함.
+    
+    INSERT INTO MEM_CHECK (추가할 칼럼명들 나열)
+    VALUES (추가할 칼럼에 맞춰서 값들 나열);
+*/
+
+INSERT INTO MEM_CHECK(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GENDER)
+VALUES(1,'user01','pass01','민경민','M');
+
+/*
+    5. FOREIGN KEY(외래키)
+    해당 컬럼에 다른 테이블에 존재하는 값만 들어와야 하는 컬럼에 부여하는 제약조건
+    컬럼에 부여하는 제약조건
+    => 다른테이블을 참조한다 라고 표현
+        즉, 참조된 다른 테이블이 제공하고 있는 값만 해당칼럼에 들어갈 수 있다.
+        EX) KH계정에서
+        EMPLOYEE테이블의 DEPT_CODE와 DEPARTMENT 테이블의 DEPT_ID값
+        => DEPT_CODE에는 DEPARTMENT테이블의 DEPT_ID에 존재하는 값만 들어올수 있다(NULL 값도 가능)
+        
+    => FOREIGN KEY 제약조건으로 다른 테이블과 관계를 형성할 수 있다.(JOIN)
+    [표현법]
+    > 칼럼레벨 방식
+    컬럼명 자료형 CONSTRAINT 제약조건명 REFERENCES 참조할테이블명 (참조할 칼럼명)
+    
+    > 테이블레벨방식
+    CONSTRAINT 제약조건명 FOREIGN KEY(컬럼명) REFERENCES 참조할테이블명 (참조할 칼럼명)
+    
+    참조할 테이블 == 부모테이블
+    새략가능한것 : CONSTRAINT 제약조건명, 참조할 컬럼명.
+    => 생략시 자동으로 참조할 테이블의 PRIMARY KEY에 해당되는 칼럼이 참조할 컬럼으로 사용됨.
+    주의사항 : 참조할 칼럼의 타입과 외래키로 지정할 칼럼타입이 같아야함.
+*/
+
+-- 부모테이블 추가
+-- 회원의 등급을 보관하는 테이블.
+CREATE TABLE MEM_GRADE(
+    GRADE_CODE CHAR(2) PRIMARY KEY, -- 등급 코드/문자열 ('G1','G2','G3',...) + 제약조건
+    GRADE_NAME VARCHAR2(20) NOT NULL -- 등급 명/문자열 ('일반회원','우수회원','운영자',...) + 제약조건
+);
+
+INSERT INTO MEM_GRADE
+VALUES ('G1','일반회원');
+
+INSERT INTO MEM_GRADE
+VALUES ('G2','우수회원');
+
+INSERT INTO MEM_GRADE
+VALUES ('G3','운영자');
+
+-- 자식테이블.
+-- 회원정보를 보관하는 테이블
+
+CREATE TABLE MEM(
+    MEM_NO NUMBER PRIMARY KEY,
+    MEM_ID VARCHAR2(20) NOT NULL UNIQUE,
+    MEM_PWD VARCHAR2(20) NOT NULL,
+    MEM_NAME VARCHAR2(20) NOT NULL,
+    GRADE_ID CHAR(2) REFERENCES MEM_GRADE(GRADE_CODE), -- 컬럼레벨방식 외래키 지정.
+    GENDER CHAR(1) CHECK (GENDER IN ('F', 'M') ) NOT NULL,
+    PHONE VARCHAR2(15),
+    EMAIL VARCHAR2(30),
+    MEM_DATE DATE DEFAULT SYSDATE NOT NULL  -- DEFAULT 설정을 먼저 하고나서 제약조건을 추가해줘야함.
+--    FOREIGN KEY(GRADE_ID) REFERENCES MEM_GRADE(GRADE_CODE)
+);
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (1,'user01','pass01','민경민','G1','M');
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (2,'user02','pass01','민경민2','G2','M');
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (3,'user03','pass01','민경민3','G3','M');
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (4,'user04','pass01','민경민4',NULL,'M');
+-- 외래키 제약조건에는 NULL값이 들어갈수 있다.
+
+-- 부모테이블에서 데이터값이 삭제된다면?
+
+DELETE FROM MEM_GRADE
+WHERE GRADE_CODE = 'G1';
+-- 자식테이블에서(MEM)에서 GRADE_ID 값이 G1인 녀석이 이미 존재하고 있기때문에 함부로 삭제할수 없다.
+
+-- 외래키 제약조건 부여시 삭제에대한 옵션을 추가해주면됨.
+-- => 기본적으로 삭제제한 옵션이있음.
+
+DROP TABLE MEM;
+
+/*
+    자식테이블 생성시(== 외래키 제약조건을 부여했다면)
+    부모테이블의 데이터가 삭제되었을때 자식테이블에는 어떻게 처리할지를 옵션으로 정해둘수있다.
+    
+    FOREIGN KEY 삭제 옵션
+    - ON DELETE SET NULL : 부모데이터를 삭제할때 해당 데이터값을 사용하는 자식데이터를 NULL로 바꾸겠다.
+    - ON DELETE CASCADE : 부모데이터를 삭제할때 해당 데이터값을 사용하는 자식데이터를 함께 삭제 하겠다.
+    - ON DELETE RESTRICTED : 삭제를 제한함(기본옵션)
+*/
+
+CREATE TABLE MEM(
+    MEM_NO NUMBER PRIMARY KEY,
+    MEM_ID VARCHAR2(20) NOT NULL UNIQUE,
+    MEM_PWD VARCHAR2(20) NOT NULL,
+    MEM_NAME VARCHAR2(20) NOT NULL,
+    GRADE_ID CHAR(2), -- REFERENCES MEM_GRADE(GRADE_CODE), -- 컬럼레벨방식 외래키 지정.
+    GENDER CHAR(1) CHECK (GENDER IN ('F', 'M') ) NOT NULL,
+    PHONE VARCHAR2(15),
+    EMAIL VARCHAR2(30),
+    MEM_DATE DATE DEFAULT SYSDATE NOT NULL,  -- DEFAULT 설정을 먼저 하고나서 제약조건을 추가해줘야함.
+    FOREIGN KEY(GRADE_ID) REFERENCES MEM_GRADE(GRADE_CODE) ON DELETE SET NULL
+);
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (1,'user01','pass01','민경민','G1','M');
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (2,'user02','pass01','민경민2','G2','M');
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (3,'user03','pass01','민경민3','G3','M');
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (4,'user04','pass01','민경민4',NULL,'M');
+
+DELETE FROM MEM_GRADE
+WHERE GRADE_CODE = 'G1';
+
+SELECT * FROM MEM;
+
+DROP TABLE MEM;
+
+CREATE TABLE MEM(
+    MEM_NO NUMBER PRIMARY KEY,
+    MEM_ID VARCHAR2(20) NOT NULL UNIQUE,
+    MEM_PWD VARCHAR2(20) NOT NULL,
+    MEM_NAME VARCHAR2(20) NOT NULL,
+    GRADE_ID CHAR(2), -- REFERENCES MEM_GRADE(GRADE_CODE), -- 컬럼레벨방식 외래키 지정.
+    GENDER CHAR(1) CHECK (GENDER IN ('F', 'M') ) NOT NULL,
+    PHONE VARCHAR2(15),
+    EMAIL VARCHAR2(30),
+    MEM_DATE DATE DEFAULT SYSDATE NOT NULL,  -- DEFAULT 설정을 먼저 하고나서 제약조건을 추가해줘야함.
+    FOREIGN KEY(GRADE_ID) REFERENCES MEM_GRADE(GRADE_CODE) ON DELETE CASCADE
+);
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (1,'user01','pass01','민경민','G1','M');
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (2,'user02','pass01','민경민2','G2','M');
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (3,'user03','pass01','민경민3','G3','M');
+
+INSERT INTO MEM(MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_ID, GENDER)
+VALUES (4,'user04','pass01','민경민4',NULL,'M');
+
+SELECT * FROM MEM;
+
+DELETE FROM MEM_GRADE
+WHERE GRADE_CODE = 'G3';
+-- 문제없이 삭제가됨.
+-- 자식테이블에서 GRADE_ID 값이 G3인 행들이 모두 삭제되어버림.
+
+-- 조인
+-- 전체 회원의 회원번호, 아디디, 비밀번호, 이름, 등급명 조회.
+SELECT MEM_NO, MEM_ID, MEM_PWD, MEM_NAME, GRADE_NAME
+FROM MEM
+LEFT JOIN MEM_GRADE ON (GRADE_ID = GRADE_CODE);
+
+/*
+    굳이 외래키 제약조건이 걸려있지 않더라고 JOIN이 가능함.
+    다만, 두컬럼에 동일한 의미의 데이터가 담겨있어야함. (자료형이 같아야되고, 담긴값의 종류, 의미도 비슷해야함)
+*/
+----------------------------------------------------------------------------------------------------------
+/*
+    ------- 접속계정 KH로 변경하기 --------
+    
+    * SUBQUERY를 이용한 테이블 생성(테이블 복사)
+    매일 SQL문을 보조하는 역할의 쿼리문 => 서브쿼리
+    
+    [표현법]
+    CREATE TABLE 테이블명
+    AS 서브쿼리 ;
+*/
+-- EMPLOYEE 테이블 조회
+SELECT * FROM EMPLOYEE;
+
+-- EMPLOYEE 테이블을 복제한 새로운 테이블생성(EMPLOYEE_COPY)
+CREATE TABLE EMPLOYEE_COPY
+AS SELECT * FROM EMPLOYEE;
+-- 칼럼들, 조회결과의 데이터값 제대로 복사됨.
+-- NOT NULL 제약조건 제대로 복사됨.
+-- PRIMARY KEY 제약조건 제대로 복사가 안됨.
+-- --> 서브쿼리를 통해 테이블을 생성한겨우 제약조건은 NOT NULL만 복사됨.
+
+SELECT * FROM EMPLOYEE_COPY;
+
+-- EMPLOYEE 테이블에 있는 칼럼의 구조만 복사하고 싶을때 사용하는 방법.
+SELECT * FROM EMPLOYEE
+WHERE 1 = 1; -- 의도적으로 조건의 결과를 FALSE
+
+CREATE TABLE EMPLOYEE_COPY2
+AS SELECT * FROM EMPLOYEE
+    WHERE 1 = 0;
+    
+-- 전체사원들중 급여가 300만원 이상인 사원들의 사번, 이름, 부서코드, 급여칼럼 복제하시오(내용물포함)
+CREATE TABLE EMPLOYEE_COPY3
+AS SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY FROM EMPLOYEE
+    WHERE SALARY >= 3000000;
+    
+-- 전체사원의 사번, 사원명, 급여, 연봉 조회한 결과를 복제한 테이블 생성
+SELECT EMP_ID, EMP_NAME, SALARY, SALARY*12 연봉
+FROM EMPLOYEE;
+
+CREATE TABLE EMPLOYEE_COPY4
+AS SELECT EMP_ID, EMP_NAME, SALARY, SALARY*12 연봉 FROM EMPLOYEE;
+-- must name this expression with a column alias
+-- 서브쿼리의 SELECT절에 산술연산, 함수식이 기술된경우 반드시 별칭을 부여해야한다.
+
+SELECT * FROM EMPLOYEE_COPY4;
