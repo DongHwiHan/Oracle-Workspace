@@ -957,3 +957,11 @@ SELECT
         'RRRR')) AS "나이"
 FROM
     EMPLOYEE;        
+    
+SELECT /*TO CHAR(*/TO DATE('190505','RRMMDD')--,'RRRR"년"MM"월"DD"일"')
+FROM DUAL;
+
+SELECT
+    TO_CHAR(TO_DATE('190505', 'RRMMDD'),'RRRR"년"MM"월"DD"일"') -- 98/08/06
+FROM
+    DUAL;

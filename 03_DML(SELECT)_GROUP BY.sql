@@ -297,3 +297,4 @@ FROM
     EMPLOYEE
 WHERE
     DEPT_CODE = 'D1'; -- 명수, 태연, 지연
+    
