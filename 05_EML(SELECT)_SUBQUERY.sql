@@ -455,7 +455,7 @@ WHERE
 
 -- 인라인뷰 사용 : 사원명만 골라내기 (보너스포함 연봉이 3000만원 이상인 사원들의 이름만)
 SELECT
-    보너스포함연봉
+    EMP_NAME
 FROM
     (
         SELECT
@@ -469,7 +469,7 @@ FROM
             ( SALARY + SALARY * NVL(BONUS, 0) ) * 12 >= 30000000
     )
 WHERE
-    DEPT_CODE IS NULL;
+    DEPT_CODE IS NOT NULL;
 
 -- 인라인 뷰를 주로 사용하는예
 -- TOP - N 분석 : 데이터베이스상에 있는 자료 중 최상위N개의 자료를 보기 위해 사용하는 기능.
