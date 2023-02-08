@@ -210,6 +210,7 @@ SELECT
     *
 FROM
     EMP_DEPT;
+    
 
 /*
     2) INSERT ALL
